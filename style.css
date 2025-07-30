@@ -102,6 +102,12 @@
     50% { opacity: 0.5; }
 }
 
+/* Fade in animation for modals */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
 /* ==========================================================================
    BODY AND MAIN LAYOUT
    ========================================================================== */
@@ -329,6 +335,12 @@ body::after {
     box-shadow: 0 0 15px rgba(6, 182, 212, 0.3);
 }
 
+/* Search focus state enhancement */
+.search-input-wrapper:focus-within .search-prompt {
+    color: var(--terminal-green);
+    text-shadow: 0 0 5px var(--terminal-green);
+}
+
 .search-prompt {
     color: var(--terminal-cyan);
     font-weight: 600;
@@ -369,14 +381,31 @@ body::after {
     text-shadow: 0 0 5px var(--terminal-red);
 }
 
+/* Update the search help section */
 .search-help {
     font-size: 0.75rem;
     color: var(--terminal-dim);
     font-style: italic;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
 }
 
 .help-text {
     opacity: 0.8;
+}
+
+.keyboard-hint {
+    color: var(--terminal-amber);
+    font-style: normal;
+    font-size: 0.7rem;
+    opacity: 0.9;
+}
+
+.keyboard-hint kbd {
+    font-size: 0.65rem;
+    padding: 0.15rem 0.3rem;
 }
 
 /* Autocomplete dropdown */
@@ -576,6 +605,7 @@ body::after {
     gap: 0.5rem;
 }
 
+/* Priority filter visual feedback */
 .filter-option {
     background: var(--terminal-bg);
     border: 1px solid var(--terminal-border);
@@ -586,9 +616,13 @@ body::after {
     cursor: pointer;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    transition: all 0.3s ease;
+    transition: all 0.3s ease, transform 0.15s ease;
     position: relative;
     border-radius: 3px;
+}
+
+.filter-option:active {
+    transform: scale(0.95);
 }
 
 .filter-option:hover {
@@ -647,6 +681,128 @@ body::after {
 .filter-option[data-priority="low"].active {
     background: var(--terminal-dim);
     color: var(--terminal-bg);
+}
+
+/* ==========================================================================
+   KEYBOARD SHORTCUTS
+   ========================================================================== */
+
+/* Keyboard shortcut styling */
+kbd {
+    background: var(--terminal-surface);
+    border: 1px solid var(--terminal-border);
+    border-radius: 3px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    color: var(--terminal-bright);
+    display: inline-block;
+    font-family: inherit;
+    font-size: 0.75rem;
+    font-weight: 600;
+    line-height: 1;
+    padding: 0.25rem 0.5rem;
+    white-space: nowrap;
+    text-transform: uppercase;
+    margin: 0 0.1rem;
+}
+
+/* Keyboard help modal */
+.keyboard-help-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    backdrop-filter: blur(5px);
+    animation: fadeIn 0.3s ease;
+}
+
+.help-content {
+    background: var(--terminal-surface);
+    border: 2px solid var(--terminal-green);
+    border-radius: 8px;
+    max-width: 500px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3);
+}
+
+.help-header {
+    background: var(--terminal-green);
+    color: var(--terminal-bg);
+    padding: 1rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-weight: 600;
+}
+
+.help-title {
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+}
+
+.help-close {
+    background: transparent;
+    border: none;
+    color: var(--terminal-bg);
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 0.25rem;
+    border-radius: 3px;
+    transition: all 0.3s ease;
+}
+
+.help-close:hover {
+    background: rgba(0, 0, 0, 0.2);
+    transform: scale(1.1);
+}
+
+.help-body {
+    padding: 1.5rem;
+}
+
+.shortcut-group {
+    margin-bottom: 1.5rem;
+}
+
+.shortcut-group:last-child {
+    margin-bottom: 0;
+}
+
+.group-title {
+    color: var(--terminal-green);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.75rem;
+    font-size: 0.9rem;
+    border-bottom: 1px solid var(--terminal-border);
+    padding-bottom: 0.25rem;
+}
+
+.shortcut-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid rgba(31, 41, 55, 0.5);
+    font-size: 0.85rem;
+}
+
+.shortcut-item:last-child {
+    border-bottom: none;
+}
+
+.shortcut-item span {
+    color: var(--terminal-text);
+    margin-left: 1rem;
 }
 
 /* ==========================================================================
@@ -1335,6 +1491,32 @@ body::after {
         font-size: 0.7rem;
         padding: 0.1rem 0.5rem;
     }
+
+    /* Mobile keyboard help modal */
+    .help-content {
+        max-width: 95%;
+        max-height: 90vh;
+        margin: 1rem;
+    }
+
+    .help-header {
+        padding: 0.75rem 1rem;
+    }
+
+    .help-body {
+        padding: 1rem;
+    }
+
+    .shortcut-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+        padding: 0.75rem 0;
+    }
+
+    .shortcut-item span {
+        margin-left: 0;
+    }
 }
 
 /* ==========================================================================
@@ -1380,6 +1562,29 @@ body::after {
         font-size: 0.7rem;
         padding: 0.25rem 0.5rem;
     }
+
+    /* Small mobile keyboard help */
+    .help-content {
+        max-width: 98%;
+        margin: 0.5rem;
+    }
+
+    .help-header {
+        padding: 0.5rem 0.75rem;
+    }
+
+    .help-body {
+        padding: 0.75rem;
+    }
+
+    .shortcut-group {
+        margin-bottom: 1rem;
+    }
+
+    kbd {
+        font-size: 0.65rem;
+        padding: 0.2rem 0.4rem;
+    }
 }
 
 /* ==========================================================================
@@ -1391,5 +1596,25 @@ body::after {
         animation-duration: 0.01ms !important;
         animation-iteration-count: 1 !important;
         transition-duration: 0.01ms !important;
+    }
+}
+
+/* ==========================================================================
+   ACCESSIBILITY - HIDE KEYBOARD SHORTCUTS ON MOBILE
+   ========================================================================== */
+
+@media (max-width: 1024px) {
+    .keyboard-hint {
+        display: none;
+    }
+
+    .search-help {
+        justify-content: flex-start;
+    }
+}
+
+@media (hover: none) and (pointer: coarse) {
+    .keyboard-hint {
+        display: none;
     }
 }

@@ -226,6 +226,9 @@ class TerminalWishlist {
                 this.selectAutocompleteItem(text);
             }
         });
+
+        // Global keyboard shortcuts
+        this.setupKeyboardShortcuts();
     }
 
     handleSearch(query) {
@@ -662,6 +665,166 @@ class TerminalWishlist {
 
     delay(ms) {
         return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    setupKeyboardShortcuts() {
+        document.addEventListener('keydown', (e) => {
+            // Only handle shortcuts if data is loaded and not typing in input
+            if (!this.isDataLoaded || e.target.tagName === 'INPUT') return;
+
+            // Handle Ctrl/Cmd combinations
+            if (e.ctrlKey || e.metaKey) {
+                switch (e.key.toLowerCase()) {
+                    case 'f':
+                        e.preventDefault();
+                        this.focusSearch();
+                        break;
+                    case 'k':
+                        e.preventDefault();
+                        this.focusSearch();
+                        break;
+                    case 'r':
+                        e.preventDefault();
+                        this.clearAllFilters();
+                        break;
+                }
+            }
+            // Handle standalone keys
+            else {
+                switch (e.key) {
+                    case '/':
+                        e.preventDefault();
+                        this.focusSearch();
+                        break;
+                    case 'Escape':
+                        this.handleEscape();
+                        break;
+                    case '1':
+                    case '2':
+                    case '3':
+                    case '4':
+                        this.togglePriorityFilter(e.key);
+                        break;
+                    case 'c':
+                        this.clearAllFilters();
+                        break;
+                    case 'h':
+                        this.showKeyboardHelp();
+                        break;
+                }
+            }
+        });
+    }
+
+    focusSearch() {
+        this.searchInput.focus();
+        this.searchInput.select();
+        this.updateSearchStatus('FOCUSED');
+    }
+
+    handleEscape() {
+        // Clear search if it has content, otherwise blur any focused element
+        if (this.searchQuery) {
+            this.clearSearch();
+        } else {
+            document.activeElement?.blur();
+            this.hideAutocomplete();
+        }
+    }
+
+    togglePriorityFilter(key) {
+        const priorityMap = {
+            '1': 'CRITICAL',
+            '2': 'HIGH',
+            '3': 'MEDIUM',
+            '4': 'LOW'
+        };
+
+        const priority = priorityMap[key];
+        if (priority) {
+            const button = document.querySelector(`[data-filter="priority"][data-value="${priority}"]`);
+            if (button && !button.classList.contains('disabled')) {
+                this.toggleFilter(button);
+                // Visual feedback
+                button.style.transform = 'scale(1.1)';
+                setTimeout(() => {
+                    button.style.transform = '';
+                }, 150);
+            }
+        }
+    }
+
+    showKeyboardHelp() {
+        // Create or toggle help modal
+        const existingHelp = document.getElementById('keyboard-help');
+        if (existingHelp) {
+            existingHelp.remove();
+            return;
+        }
+
+        const helpModal = document.createElement('div');
+        helpModal.id = 'keyboard-help';
+        helpModal.className = 'keyboard-help-modal';
+        helpModal.innerHTML = `
+        <div class="help-content">
+            <div class="help-header">
+                <span class="help-title">⌨️ KEYBOARD SHORTCUTS</span>
+                <button class="help-close" onclick="this.parentElement.parentElement.parentElement.remove()">✕</button>
+            </div>
+            <div class="help-body">
+                <div class="shortcut-group">
+                    <div class="group-title">Search</div>
+                    <div class="shortcut-item">
+                        <kbd>Ctrl</kbd> + <kbd>F</kbd> or <kbd>/</kbd>
+                        <span>Focus search</span>
+                    </div>
+                    <div class="shortcut-item">
+                        <kbd>Ctrl</kbd> + <kbd>K</kbd>
+                        <span>Quick search</span>
+                    </div>
+                    <div class="shortcut-item">
+                        <kbd>Esc</kbd>
+                        <span>Clear search / Exit</span>
+                    </div>
+                </div>
+                <div class="shortcut-group">
+                    <div class="group-title">Filters</div>
+                    <div class="shortcut-item">
+                        <kbd>1</kbd> - <kbd>4</kbd>
+                        <span>Toggle priority (Critical → Low)</span>
+                    </div>
+                    <div class="shortcut-item">
+                        <kbd>C</kbd>
+                        <span>Clear all filters</span>
+                    </div>
+                    <div class="shortcut-item">
+                        <kbd>Ctrl</kbd> + <kbd>R</kbd>
+                        <span>Reset all filters</span>
+                    </div>
+                </div>
+                <div class="shortcut-group">
+                    <div class="group-title">General</div>
+                    <div class="shortcut-item">
+                        <kbd>H</kbd>
+                        <span>Show/hide this help</span>
+                    </div>
+                    <div class="shortcut-item">
+                        <kbd>↑</kbd> <kbd>↓</kbd>
+                        <span>Navigate autocomplete</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+
+        document.body.appendChild(helpModal);
+
+        // Auto-hide after 8 seconds
+        setTimeout(() => {
+            if (document.getElementById('keyboard-help')) {
+                helpModal.remove();
+            }
+        }, 8000);
     }
 }
 
