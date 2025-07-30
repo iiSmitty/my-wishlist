@@ -139,39 +139,6 @@ body::after {
     color: var(--terminal-green);
 }
 
-.stats-panel {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1rem;
-    margin-bottom: 2rem;
-}
-
-.stat-box {
-    border: 1px solid var(--terminal-border);
-    background: rgba(57, 255, 20, 0.02);
-    padding: 1rem;
-    position: relative;
-}
-
-.stat-box::before {
-    content: attr(data-label);
-    position: absolute;
-    top: -0.6rem;
-    left: 1rem;
-    background: var(--terminal-bg);
-    padding: 0 0.5rem;
-    font-size: 0.75rem;
-    color: var(--terminal-amber);
-    text-transform: uppercase;
-}
-
-.stat-value {
-    font-size: 1.8rem;
-    font-weight: 700;
-    color: var(--terminal-cyan);
-    text-shadow: 0 0 10px var(--terminal-cyan);
-}
-
 .wishlist-display {
     border: 2px solid var(--terminal-green);
     background: rgba(57, 255, 20, 0.02);
@@ -886,10 +853,6 @@ body::after {
     .system-info {
         flex-direction: column;
         gap: 0.5rem;
-    }
-
-    .stats-panel {
-        grid-template-columns: 1fr;
     }
 
     .item-footer {

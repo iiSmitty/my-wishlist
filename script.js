@@ -4,10 +4,6 @@ class TerminalWishlist {
         this.loading = document.getElementById('loading');
         this.error = document.getElementById('error');
         this.noResults = document.getElementById('no-results');
-        this.statsPanel = document.getElementById('stats-panel');
-        this.totalItems = document.getElementById('total-items');
-        this.visibleItems = document.getElementById('visible-items');
-        this.totalValue = document.getElementById('total-value');
         this.itemCount = document.getElementById('item-count');
 
         // Filter elements
@@ -48,9 +44,8 @@ class TerminalWishlist {
             this.buildSearchIndex(items);
             this.populateCategoryFilters(items);
             this.renderItems(items);
-            this.updateTerminalStats(items);
+            this.updateItemCount(items);
             this.hideLoading();
-            this.showStats();
         } catch (err) {
             console.error('Terminal Error:', err);
             this.showError();
@@ -389,7 +384,7 @@ class TerminalWishlist {
         filteredItems = this.applyOtherFilters(filteredItems);
 
         this.renderItemsWithHighlight(filteredItems);
-        this.updateFilteredStats(filteredItems);
+        this.updateItemCount(filteredItems);
 
         // Show/hide no results message
         if (filteredItems.length === 0 && (this.searchQuery || this.hasActiveFilters())) {
@@ -535,29 +530,15 @@ class TerminalWishlist {
         return indicators[priority] || '⚪';
     }
 
-    updateTerminalStats(items) {
-        const total = items.length;
-        const criticalItems = items.filter(item => item.priority === 'CRITICAL' && !item.purchased).length;
-
-        this.totalItems.textContent = total;
-        this.visibleItems.textContent = total;
-        this.totalValue.textContent = criticalItems;
-        this.itemCount.textContent = `${total} RECORDS FOUND`;
-    }
-
-    updateFilteredStats(filteredItems) {
+    updateItemCount(filteredItems) {
         const total = this.allItems.length;
         const visible = filteredItems.length;
-        const criticalVisible = filteredItems.filter(item => item.priority === 'CRITICAL' && !item.purchased).length;
 
-        this.totalItems.textContent = total;
-        this.visibleItems.textContent = visible;
-        this.totalValue.textContent = criticalVisible;
-        this.itemCount.textContent = `${visible} OF ${total} RECORDS DISPLAYED`;
-    }
-
-    showStats() {
-        this.statsPanel.style.display = 'grid';
+        if (total === visible) {
+            this.itemCount.textContent = `${total} RECORDS FOUND`;
+        } else {
+            this.itemCount.textContent = `${visible} OF ${total} RECORDS DISPLAYED`;
+        }
     }
 
     hideLoading() {
