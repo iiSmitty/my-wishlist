@@ -1,0 +1,50 @@
+[
+  {
+    "id": 1,
+    "name": "Tactical Mechanical Keyboard",
+    "description": "Military-grade mechanical keyboard with Cherry MX switches. Rated for 50 million keystrokes. Essential for extended terminal operations and code compilation.",
+    "price": "R1500",
+    "link": "https://www.example-store.com/keyboard",
+    "purchased": false
+  },
+  {
+    "id": 2,
+    "name": "Audio Isolation Headset",
+    "description": "Active noise cancellation technology blocks external interference. Perfect for maintaining focus during critical system operations and encrypted communications.",
+    "price": "R5000",
+    "link": "https://www.example-store.com/headphones",
+    "purchased": true
+  },
+  {
+    "id": 3,
+    "name": "Strategic Operations Manual",
+    "description": "Sun Tzu's ancient text on tactical warfare and strategic thinking. Required reading for understanding competitive dynamics and resource allocation.",
+    "price": "R700",
+    "link": "https://www.example-store.com/sun-tzu",
+    "purchased": false
+  },
+  {
+    "id": 4,
+    "name": "Ergonomic Command Station",
+    "description": "Professional-grade operator chair with lumbar support systems. Designed for 12+ hour operational shifts with adjustable positioning controls.",
+    "price": "R8500",
+    "link": "https://www.example-store.com/office-chair",
+    "purchased": false
+  },
+  {
+    "id": 5,
+    "name": "Workstation Organization Module",
+    "description": "Precision-engineered desk organizer crafted from sustainable materials. Optimizes workspace efficiency with dedicated equipment compartments.",
+    "price": "R450",
+    "link": "https://www.example-store.com/desk-organizer",
+    "purchased": false
+  },
+  {
+    "id": 6,
+    "name": "Quantum Coffee Processing Unit",
+    "description": "High-precision espresso machine with temperature stability controls. Critical for maintaining operator alertness during extended debugging sessions.",
+    "price": "R12000",
+    "link": "https://www.example-store.com/espresso-machine",
+    "purchased": false
+  }
+]

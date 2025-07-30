@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WISHLIST TERMINAL v2.1.7</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="terminal-container">
+    <div class="terminal-header">
+        <div class="terminal-title">
+            <span class="terminal-prompt">root@wishlist:~$</span>
+            <h1>PERSONAL ACQUISITION TERMINAL</h1>
+        </div>
+        <div class="terminal-status">
+            <div>
+                <span class="blinking-cursor">SYSTEM ONLINE</span>
+            </div>
+            <div class="system-info">
+                <span>USER: AUTHENTICATED</span>
+                <span>VERSION: 2.1.7</span>
+                <span id="current-time">TIME: LOADING...</span>
+            </div>
+        </div>
+    </div>
+
+    <div id="stats-panel" class="stats-panel" style="display: none;">
+        <div class="stat-box" data-label="Total Items">
+            <div id="total-items" class="stat-value">0</div>
+        </div>
+        <div class="stat-box" data-label="Pending Acquisition">
+            <div id="pending-items" class="stat-value">0</div>
+        </div>
+        <div class="stat-box" data-label="Total Value">
+            <div id="total-value" class="stat-value">R0</div>
+        </div>
+    </div>
+
+    <div class="wishlist-display">
+        <div class="display-header">
+            <span>WISHLIST DATABASE</span>
+            <span id="item-count">LOADING...</span>
+        </div>
+
+        <div id="loading" class="loading-terminal">
+            <div class="loading-text">Establishing secure connection...</div>
+            <div class="progress-bar">
+                <div class="progress-fill"></div>
+            </div>
+        </div>
+
+        <div id="error" class="error-terminal" style="display: none;">
+            <div>CONNECTION FAILED</div>
+            <div style="font-size: 0.9rem; margin-top: 0.5rem;">Unable to access wishlist.json database</div>
+        </div>
+
+        <div id="wishlist-container" class="wishlist-grid"></div>
+    </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
