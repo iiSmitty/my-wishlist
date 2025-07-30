@@ -39,7 +39,18 @@ class TerminalWishlist {
     renderItems(items) {
         this.container.innerHTML = '';
 
-        items.forEach((item, index) => {
+        // Sort items by priority: CRITICAL -> HIGH -> MEDIUM -> LOW
+        const priorityOrder = { 'CRITICAL': 0, 'HIGH': 1, 'MEDIUM': 2, 'LOW': 3 };
+        const sortedItems = items.sort((a, b) => {
+            // First sort by purchased status (acquired items go to bottom)
+            if (a.purchased !== b.purchased) {
+                return a.purchased ? 1 : -1;
+            }
+            // Then sort by priority within each group
+            return priorityOrder[a.priority] - priorityOrder[b.priority];
+        });
+
+        sortedItems.forEach((item, index) => {
             const itemElement = this.createTerminalItem(item, index);
             this.container.appendChild(itemElement);
         });
@@ -47,23 +58,34 @@ class TerminalWishlist {
 
     createTerminalItem(item, index) {
         const itemDiv = document.createElement('div');
-        itemDiv.className = `wishlist-item ${item.purchased ? 'purchased acquired' : ''}`;
+        itemDiv.className = `wishlist-item priority-${item.priority.toLowerCase()} ${item.purchased ? 'purchased acquired' : ''}`;
         itemDiv.style.animationDelay = `${index * 0.1}s`;
 
         const statusClass = item.purchased ? 'status-acquired' : 'status-wanted';
         const statusText = item.purchased ? 'ACQUIRED' : 'WANTED';
         const linkText = item.purchased ? 'VIEW PURCHASE' : 'ACCESS VENDOR';
 
+        // Priority indicators with visual elements
+        const priorityIndicator = this.getPriorityIndicator(item.priority);
+
         itemDiv.innerHTML = `
             <div class="item-header">
                 <span class="item-id">ID: ${String(item.id).padStart(3, '0')}</span>
                 <span class="item-status ${statusClass}">● ${statusText}</span>
             </div>
+            <div class="item-priority">
+                <span class="priority-label">PRIORITY:</span>
+                <span class="priority-value priority-${item.priority.toLowerCase()}">${priorityIndicator} ${item.priority}</span>
+                <span class="category-badge">[${item.category}]</span>
+            </div>
             <h3 class="item-name">${this.escapeHtml(item.name)}</h3>
             <p class="item-description">${this.escapeHtml(item.description)}</p>
             <div class="item-footer">
-                <div class="item-price">${this.escapeHtml(item.price)}</div>
-                <a href="${this.escapeHtml(item.link)}" class="access-link" ${item.purchased ? '' : 'target="_blank" rel="noopener noreferrer"'}>
+                <div class="item-meta">
+                    <span class="meta-label">CLASSIFICATION:</span>
+                    <span class="meta-value">${item.category}</span>
+                </div>
+                <a href="${this.escapeHtml(item.link)}" class="access-link priority-${item.priority.toLowerCase()}" ${item.purchased ? '' : 'target="_blank" rel="noopener noreferrer"'}>
                     ${linkText}
                 </a>
             </div>
@@ -72,17 +94,24 @@ class TerminalWishlist {
         return itemDiv;
     }
 
+    getPriorityIndicator(priority) {
+        const indicators = {
+            'CRITICAL': '🔴',
+            'HIGH': '🟡',
+            'MEDIUM': '🟢',
+            'LOW': '⚪'
+        };
+        return indicators[priority] || '⚪';
+    }
+
     updateTerminalStats(items) {
         const total = items.length;
         const pending = items.filter(item => !item.purchased).length;
-        const totalValue = items.reduce((sum, item) => {
-            const price = parseInt(item.price.replace(/[^0-9]/g, '')) || 0;
-            return sum + price;
-        }, 0);
+        const criticalItems = items.filter(item => item.priority === 'CRITICAL' && !item.purchased).length;
 
         this.totalItems.textContent = total;
         this.pendingItems.textContent = pending;
-        this.totalValue.textContent = `R${totalValue.toLocaleString()}`;
+        this.totalValue.textContent = criticalItems;
         this.itemCount.textContent = `${total} RECORDS FOUND`;
     }
 
