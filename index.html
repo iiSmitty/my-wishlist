@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WISHLIST TERMINAL v2.1.7</title>
+    <title>WISHLIST TERMINAL v2.2.0</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -22,8 +22,39 @@
             </div>
             <div class="system-info">
                 <span>USER: AUTHENTICATED</span>
-                <span>VERSION: 2.1.7</span>
+                <span>VERSION: 2.2.0</span>
                 <span id="current-time">TIME: LOADING...</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="filter-panel">
+        <div class="filter-header">
+            <span class="filter-title">🔍 Filter Database</span>
+            <button class="filter-clear" id="clear-filters">Clear All</button>
+        </div>
+        <div class="filter-groups">
+            <div class="filter-group">
+                <div class="filter-group-title">Priority Level</div>
+                <div class="filter-options" id="priority-filters">
+                    <button class="filter-option" data-filter="priority" data-value="CRITICAL" data-priority="critical">Critical</button>
+                    <button class="filter-option" data-filter="priority" data-value="HIGH" data-priority="high">High</button>
+                    <button class="filter-option" data-filter="priority" data-value="MEDIUM" data-priority="medium">Medium</button>
+                    <button class="filter-option" data-filter="priority" data-value="LOW" data-priority="low">Low</button>
+                </div>
+            </div>
+            <div class="filter-group">
+                <div class="filter-group-title">Category</div>
+                <div class="filter-options" id="category-filters">
+                    <!-- Categories will be populated dynamically -->
+                </div>
+            </div>
+            <div class="filter-group">
+                <div class="filter-group-title">Status</div>
+                <div class="filter-options" id="status-filters">
+                    <button class="filter-option" data-filter="status" data-value="wanted">Wanted</button>
+                    <button class="filter-option" data-filter="status" data-value="acquired">Acquired</button>
+                </div>
             </div>
         </div>
     </div>
@@ -32,8 +63,8 @@
         <div class="stat-box" data-label="Total Items">
             <div id="total-items" class="stat-value">0</div>
         </div>
-        <div class="stat-box" data-label="Pending Acquisition">
-            <div id="pending-items" class="stat-value">0</div>
+        <div class="stat-box" data-label="Visible Items">
+            <div id="visible-items" class="stat-value">0</div>
         </div>
         <div class="stat-box" data-label="Critical Priority">
             <div id="total-value" class="stat-value">0</div>
@@ -59,6 +90,11 @@
         </div>
 
         <div id="wishlist-container" class="wishlist-grid"></div>
+
+        <div id="no-results" class="no-results" style="display: none;">
+            <div>NO MATCHING RECORDS FOUND</div>
+            <div style="font-size: 0.9rem; margin-top: 0.5rem;">Adjust filters to display items</div>
+        </div>
     </div>
 </div>
 

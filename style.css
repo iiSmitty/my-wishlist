@@ -532,6 +532,163 @@ body::after {
     text-shadow: 0 0 10px var(--terminal-red);
 }
 
+.filter-panel {
+    border: 2px solid var(--terminal-amber);
+    background: rgba(255, 176, 0, 0.05);
+    padding: 1rem;
+    margin-bottom: 2rem;
+    position: relative;
+}
+
+.filter-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.filter-title {
+    color: var(--terminal-amber);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+}
+
+.filter-clear {
+    background: transparent;
+    border: 1px solid var(--terminal-dim);
+    color: var(--terminal-dim);
+    padding: 0.25rem 0.5rem;
+    font-family: inherit;
+    font-size: 0.7rem;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: all 0.3s ease;
+}
+
+.filter-clear:hover {
+    border-color: var(--terminal-red);
+    color: var(--terminal-red);
+    box-shadow: 0 0 10px var(--terminal-red);
+}
+
+.filter-groups {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.filter-group-title {
+    font-size: 0.8rem;
+    color: var(--terminal-cyan);
+    text-transform: uppercase;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+}
+
+.filter-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.filter-option {
+    background: transparent;
+    border: 1px solid var(--terminal-border);
+    color: var(--terminal-dim);
+    padding: 0.4rem 0.8rem;
+    font-family: inherit;
+    font-size: 0.75rem;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.filter-option::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: var(--terminal-amber);
+    transition: left 0.3s ease;
+    z-index: -1;
+}
+
+.filter-option:hover {
+    border-color: var(--terminal-amber);
+    color: var(--terminal-amber);
+}
+
+.filter-option.active {
+    border-color: var(--terminal-amber);
+    color: var(--terminal-bg);
+    background: var(--terminal-amber);
+    animation: filterPulse 2s infinite;
+}
+
+.filter-option.active::before {
+    left: 0;
+}
+
+@keyframes filterPulse {
+    0%, 100% { box-shadow: 0 0 5px var(--terminal-green); }
+    50% { box-shadow: 0 0 15px var(--terminal-green), 0 0 25px var(--terminal-green); }
+}
+
+/* Priority-specific filter styling */
+.filter-option[data-priority="critical"]:hover,
+.filter-option[data-priority="critical"].active {
+    border-color: var(--terminal-red);
+    color: var(--terminal-red);
+}
+
+.filter-option[data-priority="critical"].active {
+    background: var(--terminal-red);
+    color: var(--terminal-bg);
+}
+
+.filter-option[data-priority="high"]:hover,
+.filter-option[data-priority="high"].active {
+    border-color: var(--terminal-amber);
+    color: var(--terminal-amber);
+}
+
+.filter-option[data-priority="medium"]:hover,
+.filter-option[data-priority="medium"].active {
+    border-color: var(--terminal-green);
+    color: var(--terminal-green);
+}
+
+.filter-option[data-priority="medium"].active {
+    background: var(--terminal-green);
+    color: var(--terminal-bg);
+}
+
+.no-results {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: var(--terminal-dim);
+    font-size: 1.1rem;
+}
+
+.no-results::before {
+    content: '⚠️';
+    display: block;
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
 /* Mobile responsiveness */
 @media (max-width: 768px) {
     .terminal-container {
@@ -561,6 +718,16 @@ body::after {
 
     .access-link {
         text-align: center;
+    }
+
+    .filter-groups {
+        grid-template-columns: 1fr;
+    }
+
+    .filter-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
     }
 }
 
