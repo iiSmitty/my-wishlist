@@ -28,6 +28,28 @@
         </div>
     </div>
 
+    <div class="search-panel">
+        <div class="search-header">
+            <span class="search-title">⚡ Search Database</span>
+            <div class="search-status">
+                <span id="search-status">READY</span>
+            </div>
+        </div>
+        <div class="search-container">
+            <div class="search-input-wrapper">
+                <span class="search-prompt">search@terminal:~$</span>
+                <input type="text" id="search-input" class="search-input" placeholder="Enter search query..." autocomplete="off">
+                <button class="search-clear" id="search-clear" style="display: none;">✕</button>
+            </div>
+            <div id="autocomplete-dropdown" class="autocomplete-dropdown" style="display: none;">
+                <!-- Autocomplete suggestions will be populated here -->
+            </div>
+        </div>
+        <div class="search-help">
+            <span class="help-text">Search by name, description, category, or priority. Use keywords like "critical", "hardware", etc.</span>
+        </div>
+    </div>
+
     <div class="filter-panel">
         <div class="filter-header">
             <span class="filter-title">🔍 Filter Database</span>
