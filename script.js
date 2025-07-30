@@ -6,6 +6,10 @@ class TerminalWishlist {
         this.noResults = document.getElementById('no-results');
         this.itemCount = document.getElementById('item-count');
 
+        // Panel elements for loading states
+        this.filterPanel = document.querySelector('.filter-panel');
+        this.searchPanel = document.querySelector('.search-panel');
+
         // Filter elements
         this.categoryFilters = document.getElementById('category-filters');
         this.clearFiltersBtn = document.getElementById('clear-filters');
@@ -29,28 +33,91 @@ class TerminalWishlist {
         this.searchableTerms = new Set();
 
         this.allItems = [];
+        this.isDataLoaded = false;
 
         this.initTerminal();
         this.startClock();
-        this.setupFilterEventListeners();
-        this.setupSearchEventListeners();
     }
 
     async initTerminal() {
         try {
+            // Set initial loading states - hide panels completely
+            this.setInitialLoadingState();
+
             await this.delay(2000); // Simulate connection time
             const items = await this.fetchWishlistData();
+
             this.allItems = items;
             this.buildSearchIndex(items);
             this.populateCategoryFilters(items);
             this.renderItems(items);
             this.updateItemCount(items);
+
+            // Data loaded successfully - show panels and enable functionality
+            this.setDataLoadedState();
+            this.setupEventListeners();
+
             this.hideLoading();
+            this.isDataLoaded = true;
+
         } catch (err) {
             console.error('Terminal Error:', err);
             this.showError();
             this.hideLoading();
+            this.setErrorState();
         }
+    }
+
+    setInitialLoadingState() {
+        // Hide both panels completely initially
+        if (this.filterPanel) {
+            this.filterPanel.classList.add('hidden');
+            this.filterPanel.classList.remove('loading', 'loaded');
+        }
+        if (this.searchPanel) {
+            this.searchPanel.classList.add('hidden');
+            this.searchPanel.classList.remove('loading', 'loaded');
+        }
+    }
+
+    setDataLoadedState() {
+        // Show panels with smooth animation
+        if (this.filterPanel) {
+            this.filterPanel.classList.remove('hidden', 'loading');
+            this.filterPanel.classList.add('loaded');
+        }
+        if (this.searchPanel) {
+            this.searchPanel.classList.remove('hidden', 'loading');
+            this.searchPanel.classList.add('loaded');
+        }
+
+        // Enable all filter options
+        document.querySelectorAll('.filter-option').forEach(option => {
+            option.classList.remove('disabled');
+        });
+    }
+
+    setErrorState() {
+        // Show panels in disabled state when there's an error
+        if (this.filterPanel) {
+            this.filterPanel.classList.remove('hidden', 'loading', 'loaded');
+            this.filterPanel.classList.add('loading'); // Show error state
+        }
+        if (this.searchPanel) {
+            this.searchPanel.classList.remove('hidden', 'loading', 'loaded');
+            this.searchPanel.classList.add('loading'); // Show error state
+        }
+
+        // Disable all filter options
+        document.querySelectorAll('.filter-option').forEach(option => {
+            option.classList.add('disabled');
+        });
+    }
+
+    setupEventListeners() {
+        // Only set up event listeners after data is loaded
+        this.setupFilterEventListeners();
+        this.setupSearchEventListeners();
     }
 
     async fetchWishlistData() {
@@ -102,36 +169,44 @@ class TerminalWishlist {
     setupFilterEventListeners() {
         // Filter option clicks
         document.addEventListener('click', (e) => {
-            if (e.target.classList.contains('filter-option')) {
+            if (e.target.classList.contains('filter-option') && !e.target.classList.contains('disabled')) {
                 this.toggleFilter(e.target);
             }
         });
 
         // Clear filters button
         this.clearFiltersBtn.addEventListener('click', () => {
-            this.clearAllFilters();
+            if (this.isDataLoaded) {
+                this.clearAllFilters();
+            }
         });
     }
 
     setupSearchEventListeners() {
         // Search input events
         this.searchInput.addEventListener('input', (e) => {
-            this.handleSearch(e.target.value);
+            if (this.isDataLoaded) {
+                this.handleSearch(e.target.value);
+            }
         });
 
         this.searchInput.addEventListener('keydown', (e) => {
-            this.handleSearchKeydown(e);
+            if (this.isDataLoaded) {
+                this.handleSearchKeydown(e);
+            }
         });
 
         this.searchInput.addEventListener('focus', () => {
-            if (this.searchQuery) {
+            if (this.isDataLoaded && this.searchQuery) {
                 this.showAutocomplete();
             }
         });
 
         // Clear search button
         this.searchClear.addEventListener('click', () => {
-            this.clearSearch();
+            if (this.isDataLoaded) {
+                this.clearSearch();
+            }
         });
 
         // Close autocomplete when clicking outside
@@ -143,6 +218,8 @@ class TerminalWishlist {
 
         // Autocomplete item clicks
         this.autocompleteDropdown.addEventListener('click', (e) => {
+            if (!this.isDataLoaded) return;
+
             const item = e.target.closest('.autocomplete-item');
             if (item) {
                 const text = item.querySelector('.autocomplete-text').textContent;
@@ -152,6 +229,8 @@ class TerminalWishlist {
     }
 
     handleSearch(query) {
+        if (!this.isDataLoaded) return;
+
         this.searchQuery = query.trim();
 
         // Show/hide clear button
@@ -171,6 +250,8 @@ class TerminalWishlist {
     }
 
     handleSearchKeydown(e) {
+        if (!this.isDataLoaded) return;
+
         const items = this.autocompleteDropdown.querySelectorAll('.autocomplete-item');
 
         switch (e.key) {
@@ -204,7 +285,7 @@ class TerminalWishlist {
     }
 
     updateAutocomplete(query) {
-        if (!query || query.length < 2) {
+        if (!this.isDataLoaded || !query || query.length < 2) {
             this.hideAutocomplete();
             return;
         }
@@ -321,6 +402,8 @@ class TerminalWishlist {
     }
 
     clearSearch() {
+        if (!this.isDataLoaded) return;
+
         this.searchInput.value = '';
         this.searchQuery = '';
         this.searchClear.style.display = 'none';
@@ -336,6 +419,8 @@ class TerminalWishlist {
     }
 
     toggleFilter(button) {
+        if (!this.isDataLoaded || button.classList.contains('disabled')) return;
+
         const filterType = button.getAttribute('data-filter');
         const filterValue = button.getAttribute('data-value');
 
@@ -353,6 +438,8 @@ class TerminalWishlist {
     }
 
     clearAllFilters() {
+        if (!this.isDataLoaded) return;
+
         // Reset all filter sets
         this.activeFilters.priority.clear();
         this.activeFilters.category.clear();
@@ -368,10 +455,13 @@ class TerminalWishlist {
     }
 
     applyFilters() {
+        if (!this.isDataLoaded) return;
         this.applySearchAndFilters();
     }
 
     applySearchAndFilters() {
+        if (!this.isDataLoaded) return;
+
         let filteredItems = this.allItems;
 
         // Apply search filter first
