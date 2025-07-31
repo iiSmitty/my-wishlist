@@ -192,104 +192,121 @@ export class KeyboardManager {
 
     getHelpModalHTML() {
         return `
-        <div class="help-content">
-            <div class="help-header">
-                <span class="help-title">⌨️ KEYBOARD SHORTCUTS</span>
-                <button class="help-close" onclick="this.closest('.keyboard-help-modal').remove(); window.keyboardManager.helpModalVisible = false;" aria-label="Close help">✕</button>
+    <div class="help-content">
+        <div class="help-header">
+            <span class="help-title">⌨️ KEYBOARD SHORTCUTS</span>
+            <button class="help-close" onclick="this.closest('.keyboard-help-modal').remove(); window.keyboardManager.helpModalVisible = false;" aria-label="Close help">✕</button>
+        </div>
+        <div class="help-body">
+            <div class="shortcut-group">
+                <div class="group-title">Search & Navigation</div>
+                <div class="shortcut-item">
+                    <div><kbd>Ctrl</kbd> + <kbd>F</kbd> or <kbd>/</kbd></div>
+                    <span>Focus search input</span>
+                </div>
+                <div class="shortcut-item">
+                    <div><kbd>Ctrl</kbd> + <kbd>K</kbd></div>
+                    <span>Quick search</span>
+                </div>
+                <div class="shortcut-item">
+                    <div><kbd>Esc</kbd></div>
+                    <span>Clear search / Close modals / Blur focus</span>
+                </div>
+                <div class="shortcut-item">
+                    <div><kbd>T</kbd></div>
+                    <span>Scroll to top</span>
+                </div>
             </div>
-            <div class="help-body">
-                <div class="shortcut-group">
-                    <div class="group-title">Search & Navigation</div>
-                    <div class="shortcut-item">
-                        <div><kbd>Ctrl</kbd> + <kbd>F</kbd> or <kbd>/</kbd></div>
-                        <span>Focus search input</span>
-                    </div>
-                    <div class="shortcut-item">
-                        <div><kbd>Ctrl</kbd> + <kbd>K</kbd></div>
-                        <span>Quick search</span>
-                    </div>
-                    <div class="shortcut-item">
-                        <div><kbd>Esc</kbd></div>
-                        <span>Clear search / Close modals / Blur focus</span>
-                    </div>
-                    <div class="shortcut-item">
-                        <div><kbd>T</kbd></div>
-                        <span>Scroll to top</span>
+            <div class="shortcut-group">
+                <div class="group-title">Filters</div>
+                <div class="shortcut-item">
+                    <div><kbd>1</kbd> - <kbd>4</kbd></div>
+                    <span>Toggle priority filters (Critical → Low)</span>
+                </div>
+                <div class="shortcut-item">
+                    <div><kbd>C</kbd></div>
+                    <span>Clear all filters and search</span>
+                </div>
+                <div class="shortcut-item">
+                    <div><kbd>Ctrl</kbd> + <kbd>R</kbd></div>
+                    <span>Reset all filters and search</span>
+                </div>
+            </div>
+            <div class="shortcut-group">
+                <div class="group-title">Random Selection</div>
+                <div class="shortcut-item">
+                    <div><kbd>R</kbd></div>
+                    <span>Basic random selection</span>
+                </div>
+                <div class="shortcut-item">
+                    <div><kbd>S</kbd></div>
+                    <span>Surprise me (weighted selection)</span>
+                </div>
+                <div class="shortcut-item">
+                    <div><kbd>P</kbd></div>
+                    <span>Priority roulette</span>
+                </div>
+            </div>
+            <div class="shortcut-group">
+                <div class="group-title">Themes & Appearance</div>
+                <div class="shortcut-item">
+                    <div><kbd>Alt</kbd> + <kbd>T</kbd></div>
+                    <span>Cycle through themes</span>
+                </div>
+                <div class="shortcut-item">
+                    <div>Click theme selector</div>
+                    <span>Choose specific theme</span>
+                </div>
+            </div>
+            <div class="shortcut-group">
+                <div class="group-title">Help & Interface</div>
+                <div class="shortcut-item">
+                    <div><kbd>H</kbd> or <kbd>?</kbd></div>
+                    <span>Show/hide keyboard shortcuts</span>
+                </div>
+                <div class="shortcut-item">
+                    <div><kbd>Ctrl</kbd> + <kbd>H</kbd></div>
+                    <span>Toggle help modal</span>
+                </div>
+                <div class="shortcut-item">
+                    <div><kbd>↑</kbd> <kbd>↓</kbd></div>
+                    <span>Navigate autocomplete suggestions</span>
+                </div>
+                <div class="shortcut-item">
+                    <div><kbd>Enter</kbd></div>
+                    <span>Select autocomplete suggestion</span>
+                </div>
+            </div>
+            <div class="shortcut-group">
+                <div class="group-title">Tips</div>
+                <div class="shortcut-tip">
+                    <div class="tip-icon">💡</div>
+                    <div class="tip-content">
+                        <strong>Pro Tip:</strong> Use number keys (1-4) to quickly toggle priority filters while browsing your wishlist.
                     </div>
                 </div>
-                <div class="shortcut-group">
-                    <div class="group-title">Filters</div>
-                    <div class="shortcut-item">
-                        <div><kbd>1</kbd> - <kbd>4</kbd></div>
-                        <span>Toggle priority filters (Critical → Low)</span>
-                    </div>
-                    <div class="shortcut-item">
-                        <div><kbd>C</kbd></div>
-                        <span>Clear all filters and search</span>
-                    </div>
-                    <div class="shortcut-item">
-                        <div><kbd>Ctrl</kbd> + <kbd>R</kbd></div>
-                        <span>Reset all filters and search</span>
+                <div class="shortcut-tip">
+                    <div class="tip-icon">🎯</div>
+                    <div class="tip-content">
+                        <strong>Quick Access:</strong> Press <kbd>/</kbd> from anywhere to start searching immediately.
                     </div>
                 </div>
-                <div class="shortcut-group">
-                    <div class="group-title">Random Selection</div>
-                    <div class="shortcut-item">
-                        <div><kbd>R</kbd></div>
-                        <span>Basic random selection</span>
-                    </div>
-                    <div class="shortcut-item">
-                        <div><kbd>S</kbd></div>
-                        <span>Surprise me (weighted selection)</span>
-                    </div>
-                    <div class="shortcut-item">
-                        <div><kbd>P</kbd></div>
-                        <span>Priority roulette</span>
+                <div class="shortcut-tip">
+                    <div class="tip-icon">🎲</div>
+                    <div class="tip-content">
+                        <strong>Decision Help:</strong> Use <kbd>R</kbd>, <kbd>S</kbd>, or <kbd>P</kbd> for different random selection modes when you can't decide.
                     </div>
                 </div>
-                <div class="shortcut-group">
-                    <div class="group-title">Help & Interface</div>
-                    <div class="shortcut-item">
-                        <div><kbd>H</kbd> or <kbd>?</kbd></div>
-                        <span>Show/hide keyboard shortcuts</span>
-                    </div>
-                    <div class="shortcut-item">
-                        <div><kbd>Ctrl</kbd> + <kbd>H</kbd></div>
-                        <span>Toggle help modal</span>
-                    </div>
-                    <div class="shortcut-item">
-                        <div><kbd>↑</kbd> <kbd>↓</kbd></div>
-                        <span>Navigate autocomplete suggestions</span>
-                    </div>
-                    <div class="shortcut-item">
-                        <div><kbd>Enter</kbd></div>
-                        <span>Select autocomplete suggestion</span>
-                    </div>
-                </div>
-                <div class="shortcut-group">
-                    <div class="group-title">Tips</div>
-                    <div class="shortcut-tip">
-                        <div class="tip-icon">💡</div>
-                        <div class="tip-content">
-                            <strong>Pro Tip:</strong> Use number keys (1-4) to quickly toggle priority filters while browsing your wishlist.
-                        </div>
-                    </div>
-                    <div class="shortcut-tip">
-                        <div class="tip-icon">🎯</div>
-                        <div class="tip-content">
-                            <strong>Quick Access:</strong> Press <kbd>/</kbd> from anywhere to start searching immediately.
-                        </div>
-                    </div>
-                    <div class="shortcut-tip">
-                        <div class="tip-icon">🎲</div>
-                        <div class="tip-content">
-                            <strong>Decision Help:</strong> Use <kbd>R</kbd>, <kbd>S</kbd>, or <kbd>P</kbd> for different random selection modes when you can't decide.
-                        </div>
+                <div class="shortcut-tip">
+                    <div class="tip-icon">🎨</div>
+                    <div class="tip-content">
+                        <strong>Personalization:</strong> Press <kbd>Alt</kbd> + <kbd>T</kbd> to cycle themes, or click the theme selector to choose a specific theme.
                     </div>
                 </div>
             </div>
         </div>
-        `;
+    </div>
+    `;
     }
 
     announceAction(message) {

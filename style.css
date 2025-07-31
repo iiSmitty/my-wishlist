@@ -6,7 +6,8 @@
    CSS CUSTOM PROPERTIES (VARIABLES)
    ========================================================================== */
 
-:root {
+:root,
+[data-theme="terminal"] {
     /* Core terminal color palette */
     --terminal-bg: #0a0e1a;
     --terminal-surface: #111827;
@@ -28,6 +29,112 @@
     /* Visual effects */
     --scanline: rgba(16, 185, 129, 0.02);
     --glow-soft: rgba(16, 185, 129, 0.15);
+
+    --theme-name: "DEFAULT TERMINAL";
+}
+
+/* ==========================================================================
+   AMBER RETRO THEME
+   ========================================================================== */
+
+[data-theme="amber"] {
+    --terminal-bg: #1a0f00;
+    --terminal-surface: #2d1b00;
+    --terminal-border: #4a2c00;
+
+    --terminal-green: #ffb000;
+    --terminal-green-bright: #ffc633;
+    --terminal-amber: #ff8c00;
+    --terminal-red: #ff4500;
+    --terminal-cyan: #ffaa00;
+    --terminal-blue: #ffa500;
+
+    --terminal-dim: #cc8800;
+    --terminal-bright: #fff2cc;
+    --terminal-text: #ffcc66;
+
+    --scanline: rgba(255, 176, 0, 0.03);
+    --glow-soft: rgba(255, 176, 0, 0.2);
+
+    --theme-name: "AMBER RETRO";
+}
+
+/* ==========================================================================
+   MATRIX GREEN THEME
+   ========================================================================== */
+
+[data-theme="matrix"] {
+    --terminal-bg: #000000;
+    --terminal-surface: #001100;
+    --terminal-border: #003300;
+
+    --terminal-green: #00ff41;
+    --terminal-green-bright: #39ff70;
+    --terminal-amber: #00cc33;
+    --terminal-red: #ff0033;
+    --terminal-cyan: #00ffaa;
+    --terminal-blue: #00aa66;
+
+    --terminal-dim: #006622;
+    --terminal-bright: #ccffcc;
+    --terminal-text: #00dd44;
+
+    --scanline: rgba(0, 255, 65, 0.04);
+    --glow-soft: rgba(0, 255, 65, 0.25);
+
+    --theme-name: "MATRIX";
+}
+
+/* ==========================================================================
+   CYBERPUNK THEME
+   ========================================================================== */
+
+[data-theme="cyberpunk"] {
+    --terminal-bg: #0d001a;
+    --terminal-surface: #1a0033;
+    --terminal-border: #330066;
+
+    --terminal-green: #ff00ff;
+    --terminal-green-bright: #ff66ff;
+    --terminal-amber: #00ffff;
+    --terminal-red: #ff0080;
+    --terminal-cyan: #8000ff;
+    --terminal-blue: #0080ff;
+
+    --terminal-dim: #cc00cc;
+    --terminal-bright: #ffccff;
+    --terminal-text: #ff99ff;
+
+    --scanline: rgba(255, 0, 255, 0.03);
+    --glow-soft: rgba(255, 0, 255, 0.2);
+
+    --theme-name: "CYBERPUNK";
+}
+
+/* ==========================================================================
+   OCEAN THEME
+   ========================================================================== */
+
+[data-theme="ocean"] {
+    --terminal-bg: #001122;
+    --terminal-surface: #002244;
+    --terminal-border: #003366;
+
+    --terminal-green: #00ccff;
+    --terminal-green-bright: #33ddff;
+    --terminal-amber: #0099cc;
+    --terminal-red: #ff6666;
+    --terminal-cyan: #66ccff;
+    --terminal-blue: #0066cc;
+
+    --terminal-dim: #6699cc;
+    --terminal-bright: #e6f3ff;
+    --terminal-text: #99ccff;
+
+    --scanline: rgba(0, 204, 255, 0.02);
+    --glow-soft: rgba(0, 204, 255, 0.15);
+
+    --theme-name: "OCEAN";
 }
 
 /* ==========================================================================
@@ -1223,7 +1330,8 @@ kbd {
    CUSTOM SCROLLBARS
    ========================================================================== */
 
-.autocomplete-dropdown::-webkit-scrollbar {
+.autocomplete-dropdown::-webkit-scrollbar,
+.theme-dropdown::-webkit-scrollbar {
     width: 6px;
 }
 
@@ -1583,6 +1691,186 @@ kbd {
 }
 
 /* ==========================================================================
+   THEME SELECTOR COMPONENT
+   ========================================================================== */
+
+.theme-selector {
+    position: fixed;
+    top: 2rem;
+    right: 2rem;
+    z-index: 1500;
+    background: var(--terminal-surface);
+    border: 2px solid var(--terminal-border);
+    border-radius: 6px;
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+    opacity: 0.8;
+}
+
+.theme-selector:hover {
+    opacity: 1;
+    border-color: var(--terminal-green);
+    box-shadow: 0 0 20px var(--glow-soft);
+}
+
+.theme-selector-button {
+    background: transparent;
+    border: none;
+    color: var(--terminal-text);
+    padding: 0.75rem;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.85rem;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: 220px;
+    border-radius: 6px;
+}
+
+.theme-selector-button:hover {
+    color: var(--terminal-green);
+    text-shadow: 0 0 5px var(--terminal-green);
+}
+
+.theme-current {
+    flex: 1;
+    text-align: left;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.theme-arrow {
+    transition: transform 0.3s ease;
+    font-size: 0.7rem;
+    opacity: 0.7;
+}
+
+/* Arrow rotates when dropdown is open */
+.theme-selector.open .theme-arrow {
+    transform: rotate(180deg);
+}
+
+.theme-dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: rgba(0, 0, 0, 0.95);
+    border: 1px solid var(--terminal-green);
+    border-top: none;
+    border-radius: 0 0 4px 4px;
+    width: 220px;
+    max-height: 300px;
+    overflow-y: auto;
+    opacity: 0;
+    transform: translateY(-10px);
+    pointer-events: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 10px var(--glow-soft);
+    backdrop-filter: blur(10px);
+    visibility: hidden;
+}
+
+/* Only show when the dropdown has the 'show' class */
+.theme-dropdown.show {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+    visibility: visible;
+}
+
+.theme-option {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-bottom: 1px solid var(--terminal-border);
+    font-size: 0.8rem;
+}
+
+.theme-option:last-child {
+    border-bottom: none;
+}
+
+.theme-option:hover {
+    background: rgba(var(--terminal-green-rgb, 16, 185, 129), 0.1);
+    color: var(--terminal-green);
+}
+
+.theme-option.active {
+    background: var(--terminal-green);
+    color: var(--terminal-bg);
+    font-weight: 600;
+    box-shadow: 0 0 15px rgba(var(--terminal-green-rgb, 16, 185, 129), 0.4);
+}
+
+.theme-preview {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 1px solid var(--terminal-border);
+    flex-shrink: 0;
+}
+
+.theme-preview.terminal { background: #10b981; }
+.theme-preview.amber { background: #ffb000; }
+.theme-preview.matrix { background: #00ff41; }
+.theme-preview.cyberpunk { background: #ff00ff; }
+.theme-preview.ocean { background: #00ccff; }
+
+.theme-info {
+    flex: 1;
+}
+
+.theme-name {
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 600;
+    margin-bottom: 0.2rem;
+}
+
+.theme-description {
+    font-size: 0.7rem;
+    color: var(--terminal-dim);
+    font-style: italic;
+}
+
+/* Custom scrollbar for theme dropdown */
+.theme-dropdown::-webkit-scrollbar {
+    width: 6px;
+}
+
+.theme-dropdown::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.3);
+}
+
+.theme-dropdown::-webkit-scrollbar-thumb {
+    background: var(--terminal-cyan);
+    border-radius: 3px;
+}
+
+.theme-dropdown::-webkit-scrollbar-thumb:hover {
+    background: var(--terminal-bright);
+}
+
+/* ==========================================================================
+   THEME TRANSITION EFFECTS
+   ========================================================================== */
+
+* {
+    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+
+/* Preserve existing animations but allow color transitions */
+body, .wishlist-item, .filter-option, .access-link {
+    transition: all 0.3s ease;
+}
+
+/* ==========================================================================
    RESPONSIVE DESIGN - MOBILE
    ========================================================================== */
 
@@ -1907,6 +2195,25 @@ kbd {
         justify-content: center;
         flex-wrap: wrap;
     }
+
+    .theme-selector {
+        top: 1rem;
+        right: 1rem;
+    }
+
+    .theme-dropdown {
+        width: 200px;
+    }
+
+    .theme-option {
+        padding: 0.6rem 0.8rem;
+        font-size: 0.75rem;
+    }
+
+    .theme-selector-button {
+        width: 200px;
+        padding: 0.6rem;
+    }
 }
 
 /* ==========================================================================
@@ -2001,10 +2308,138 @@ kbd {
     .search-help {
         justify-content: flex-start;
     }
+
+    .theme-selector {
+        z-index: 1000;
+    }
 }
 
 @media (hover: none) and (pointer: coarse) {
     .keyboard-hint {
         display: none;
+    }
+}
+
+/* ==========================================================================
+   THEME-SPECIFIC ENHANCEMENTS
+   ========================================================================== */
+
+/* Enhanced glow effects for matrix theme */
+[data-theme="matrix"] .wishlist-item:hover {
+    box-shadow: 0 0 30px rgba(0, 255, 65, 0.3);
+}
+
+[data-theme="matrix"] .terminal-title h1 {
+    animation: textGlow 2s ease-in-out infinite, matrixGlow 3s ease-in-out infinite;
+}
+
+@keyframes matrixGlow {
+    0%, 100% {
+        text-shadow: 0 0 5px var(--terminal-green), 0 0 10px var(--terminal-green), 0 0 15px var(--terminal-green);
+    }
+    50% {
+        text-shadow: 0 0 10px var(--terminal-green), 0 0 20px var(--terminal-green), 0 0 30px var(--terminal-green);
+    }
+}
+
+/* Cyberpunk theme special effects */
+[data-theme="cyberpunk"] body::before {
+    background: linear-gradient(transparent 50%, rgba(255, 0, 255, 0.05) 50%);
+}
+
+[data-theme="cyberpunk"] .access-link:hover {
+    text-shadow: 0 0 10px currentColor;
+}
+
+/* Amber theme vintage effects */
+[data-theme="amber"] .terminal-title h1 {
+    text-shadow: 0 0 10px var(--terminal-green), 0 0 5px var(--terminal-amber);
+}
+
+[data-theme="amber"] .loading-text {
+    border-right-color: var(--terminal-amber);
+}
+
+/* Ocean theme wave effects */
+[data-theme="ocean"] body::after {
+    background: linear-gradient(90deg,
+    transparent 0%,
+    var(--terminal-cyan) 50%,
+    transparent 100%);
+    height: 2px;
+    opacity: 0.3;
+}
+
+/* ==========================================================================
+   THEME SELECTOR ANIMATIONS
+   ========================================================================== */
+
+/* Subtle pulse animation when themes are available */
+@keyframes themePulse {
+    0%, 100% {
+        box-shadow: 0 0 0 0 rgba(var(--terminal-green-rgb, 16, 185, 129), 0.4);
+    }
+    50% {
+        box-shadow: 0 0 0 4px rgba(var(--terminal-green-rgb, 16, 185, 129), 0.1);
+    }
+}
+
+.theme-selector.pulse {
+    animation: themePulse 2s ease-in-out;
+}
+
+/* Loading state for theme selector */
+.theme-selector.loading {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+.theme-selector.loading .theme-current::after {
+    content: '...';
+    animation: loadingDots 1.5s infinite;
+}
+
+@keyframes loadingDots {
+    0%, 20% { content: '...'; }
+    40% { content: '..'; }
+    60% { content: '.'; }
+    80%, 100% { content: ''; }
+}
+
+/* Focus styles for accessibility */
+.theme-selector-button:focus {
+    outline: 2px solid var(--terminal-green);
+    outline-offset: 2px;
+}
+
+.theme-option:focus {
+    background: rgba(var(--terminal-green-rgb, 16, 185, 129), 0.2);
+    color: var(--terminal-green);
+    outline: none;
+}
+
+/* Hover effect for the entire selector */
+.theme-selector:not(.loading):hover {
+    transform: translateY(-1px);
+}
+
+/* Smooth color transitions for theme changes */
+.theme-selector * {
+    transition: color 0.3s ease, background-color 0.3s ease, border-color 0.3s ease;
+}
+
+/* Hide theme selector on screens with insufficient height OR portrait orientation */
+@media (max-height: 800px), (orientation: portrait) {
+    .theme-selector {
+        display: none;
+    }
+}
+
+/* Show theme selector only on landscape screens with adequate height */
+@media (min-height: 801px) and (orientation: landscape) {
+    .theme-selector {
+        display: block;
+        top: 2rem;
+        right: 2rem;
     }
 }

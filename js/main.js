@@ -4,12 +4,14 @@ import { FilterManager } from './modules/FilterManager.js';
 import { RandomSelector } from './modules/RandomSelector.js';
 import { UIManager } from './modules/UIManager.js';
 import { KeyboardManager } from './modules/KeyboardManager.js';
+import { ThemeManager } from './modules/ThemeManager.js';
 
 class TerminalWishlist {
     constructor() {
         // Initialize managers in dependency order
         this.dataManager = new DataManager();
         this.uiManager = new UIManager();
+        this.themeManager = new ThemeManager();
         this.searchManager = new SearchManager(this.dataManager);
         this.filterManager = new FilterManager();
         this.randomSelector = new RandomSelector(this.dataManager, this.filterManager, this.searchManager);
@@ -32,6 +34,10 @@ class TerminalWishlist {
     async initTerminal() {
         try {
             this.uiManager.setInitialLoadingState();
+
+            // Initialize theme manager early so it's available during loading
+            this.themeManager.initialize();
+
             await this.delay(2000);
 
             const items = await this.dataManager.fetchWishlistData();
@@ -56,7 +62,6 @@ class TerminalWishlist {
             this.keyboardManager.setDataLoaded(false);
         }
     }
-
     setupEventListeners() {
         // Set up all manager event listeners
         this.searchManager.setupEventListeners();
@@ -66,6 +71,7 @@ class TerminalWishlist {
 
         // Set up application-level event listeners
         this.setupApplicationEventListeners();
+        this.setupThemeEventListeners();
     }
 
     setupApplicationEventListeners() {
@@ -112,6 +118,36 @@ class TerminalWishlist {
         window.addEventListener('unhandledrejection', (e) => {
             this.handleGlobalError(e);
         });
+    }
+
+    setupThemeEventListeners() {
+        // Listen for theme changes
+        document.addEventListener('themechange', (e) => {
+            this.handleThemeChange(e.detail);
+        });
+    }
+
+    handleThemeChange(themeDetail) {
+        // Log theme change for analytics/debugging
+        console.log(`Theme changed from ${themeDetail.oldTheme} to ${themeDetail.newTheme}`);
+
+        // Update any theme-dependent UI elements
+        this.updateThemeDependentElements(themeDetail.newTheme);
+
+        // Announce to screen readers
+        this.uiManager.announceToScreenReader(`Theme changed to ${themeDetail.themeConfig.name}`);
+    }
+
+    updateThemeDependentElements(theme) {
+        // Update any elements that need special handling for specific themes
+        const root = document.documentElement;
+
+        // Special handling for matrix theme - enhance scanline effects
+        if (theme === 'matrix') {
+            root.style.setProperty('--scanline-speed', '2s');
+        } else {
+            root.style.setProperty('--scanline-speed', '3s');
+        }
     }
 
     handleSearchAndFilterChange() {
