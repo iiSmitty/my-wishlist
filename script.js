@@ -9,6 +9,7 @@ class TerminalWishlist {
         // Panel elements for loading states
         this.filterPanel = document.querySelector('.filter-panel');
         this.searchPanel = document.querySelector('.search-panel');
+        this.randomPanel = document.querySelector('.random-panel');
 
         // Filter elements
         this.categoryFilters = document.getElementById('category-filters');
@@ -19,6 +20,10 @@ class TerminalWishlist {
         this.searchClear = document.getElementById('search-clear');
         this.searchStatus = document.getElementById('search-status');
         this.autocompleteDropdown = document.getElementById('autocomplete-dropdown');
+
+        // Random selector elements
+        this.randomStatus = document.getElementById('random-status');
+        this.randomResult = document.getElementById('random-result');
 
         // Filter state
         this.activeFilters = {
@@ -31,6 +36,10 @@ class TerminalWishlist {
         this.searchQuery = '';
         this.autocompleteIndex = -1;
         this.searchableTerms = new Set();
+
+        // Random selector state
+        this.randomMode = 'all';
+        this.isRandomizing = false;
 
         this.allItems = [];
         this.isDataLoaded = false;
@@ -69,7 +78,7 @@ class TerminalWishlist {
     }
 
     setInitialLoadingState() {
-        // Hide both panels completely initially
+        // Hide all panels completely initially
         if (this.filterPanel) {
             this.filterPanel.classList.add('hidden');
             this.filterPanel.classList.remove('loading', 'loaded');
@@ -77,6 +86,10 @@ class TerminalWishlist {
         if (this.searchPanel) {
             this.searchPanel.classList.add('hidden');
             this.searchPanel.classList.remove('loading', 'loaded');
+        }
+        if (this.randomPanel) {
+            this.randomPanel.classList.add('hidden');
+            this.randomPanel.classList.remove('loading', 'loaded');
         }
     }
 
@@ -90,9 +103,18 @@ class TerminalWishlist {
             this.searchPanel.classList.remove('hidden', 'loading');
             this.searchPanel.classList.add('loaded');
         }
+        if (this.randomPanel) {
+            this.randomPanel.classList.remove('hidden', 'loading');
+            this.randomPanel.classList.add('loaded');
+        }
 
         // Enable all filter options
         document.querySelectorAll('.filter-option').forEach(option => {
+            option.classList.remove('disabled');
+        });
+
+        // Enable all random mode options
+        document.querySelectorAll('.mode-option').forEach(option => {
             option.classList.remove('disabled');
         });
     }
@@ -107,9 +129,18 @@ class TerminalWishlist {
             this.searchPanel.classList.remove('hidden', 'loading', 'loaded');
             this.searchPanel.classList.add('loading'); // Show error state
         }
+        if (this.randomPanel) {
+            this.randomPanel.classList.remove('hidden', 'loading', 'loaded');
+            this.randomPanel.classList.add('loading'); // Show error state
+        }
 
         // Disable all filter options
         document.querySelectorAll('.filter-option').forEach(option => {
+            option.classList.add('disabled');
+        });
+
+        // Disable all random mode options
+        document.querySelectorAll('.mode-option').forEach(option => {
             option.classList.add('disabled');
         });
     }
@@ -118,6 +149,7 @@ class TerminalWishlist {
         // Only set up event listeners after data is loaded
         this.setupFilterEventListeners();
         this.setupSearchEventListeners();
+        this.setupRandomEventListeners();
     }
 
     async fetchWishlistData() {
@@ -229,6 +261,44 @@ class TerminalWishlist {
 
         // Global keyboard shortcuts
         this.setupKeyboardShortcuts();
+    }
+
+    setupRandomEventListeners() {
+        // Random selection buttons
+        document.getElementById('random-select')?.addEventListener('click', () => {
+            if (this.isDataLoaded && !this.isRandomizing) {
+                this.performRandomSelection('basic');
+            }
+        });
+
+        document.getElementById('surprise-me')?.addEventListener('click', () => {
+            if (this.isDataLoaded && !this.isRandomizing) {
+                this.performRandomSelection('weighted');
+            }
+        });
+
+        document.getElementById('priority-roulette')?.addEventListener('click', () => {
+            if (this.isDataLoaded && !this.isRandomizing) {
+                this.performRandomSelection('roulette');
+            }
+        });
+
+        // Random mode selection
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('mode-option') && !e.target.classList.contains('disabled')) {
+                this.setRandomMode(e.target);
+            }
+        });
+
+        // Random result action - simplified event delegation
+        this.randomResult?.addEventListener('click', (e) => {
+            if (e.target.classList.contains('random-result-action')) {
+                const itemId = e.target.dataset.itemId;
+                e.preventDefault();
+                e.stopPropagation();
+                this.jumpToRandomItem(itemId);
+            }
+        });
     }
 
     handleSearch(query) {
@@ -563,6 +633,7 @@ class TerminalWishlist {
         const itemDiv = document.createElement('div');
         itemDiv.className = `wishlist-item priority-${item.priority.toLowerCase()} ${item.purchased ? 'purchased acquired' : ''}`;
         itemDiv.style.animationDelay = `${index * 0.1}s`;
+        itemDiv.setAttribute('data-item-id', item.id);
 
         const statusClass = item.purchased ? 'status-acquired' : 'status-wanted';
         const statusText = item.purchased ? 'ACQUIRED' : 'WANTED';
@@ -667,6 +738,271 @@ class TerminalWishlist {
         return new Promise(resolve => setTimeout(resolve, ms));
     }
 
+    // ========================================================================
+    // RANDOM SELECTOR METHODS
+    // ========================================================================
+
+    setRandomMode(button) {
+        if (this.isRandomizing) return;
+
+        // Update active state
+        document.querySelectorAll('.mode-option').forEach(btn => btn.classList.remove('active'));
+        button.classList.add('active');
+
+        this.randomMode = button.dataset.mode;
+
+        // Visual feedback
+        button.style.transform = 'scale(1.05)';
+        setTimeout(() => {
+            button.style.transform = '';
+        }, 150);
+    }
+
+    getRandomFilteredItems() {
+        let filteredItems = this.allItems;
+
+        // Apply current search and filters first
+        if (this.searchQuery) {
+            filteredItems = this.searchItems(filteredItems, this.searchQuery);
+        }
+        filteredItems = this.applyOtherFilters(filteredItems);
+
+        // Apply random mode filter
+        switch (this.randomMode) {
+            case 'wanted':
+                return filteredItems.filter(item => !item.purchased);
+            case 'priority':
+                return filteredItems.filter(item => ['CRITICAL', 'HIGH'].includes(item.priority));
+            default:
+                return filteredItems;
+        }
+    }
+
+    async performRandomSelection(type) {
+        const filteredItems = this.getRandomFilteredItems();
+
+        if (filteredItems.length === 0) {
+            this.updateRandomStatus('NO ITEMS AVAILABLE', 'error');
+            return;
+        }
+
+        this.isRandomizing = true;
+        this.startRandomAnimation(type);
+
+        // Simulate selection time
+        const selectionTime = type === 'roulette' ? 3000 : type === 'weighted' ? 2500 : 2000;
+        await this.delay(selectionTime);
+
+        let selectedItem;
+        let resultType;
+
+        switch (type) {
+            case 'weighted':
+                selectedItem = this.getWeightedRandomItem(filteredItems);
+                resultType = '✨ SURPRISE SELECTION';
+                break;
+            case 'roulette':
+                selectedItem = this.getPriorityRouletteItem(filteredItems);
+                resultType = '🎰 ROULETTE RESULT';
+                break;
+            default:
+                selectedItem = filteredItems[Math.floor(Math.random() * filteredItems.length)];
+                resultType = '🎲 RANDOM SELECTION';
+                break;
+        }
+
+        this.displayRandomResult(selectedItem, resultType);
+        this.isRandomizing = false;
+        this.resetRandomAnimation();
+    }
+
+    getWeightedRandomItem(items) {
+        const weightedItems = [];
+
+        items.forEach(item => {
+            const weight = {
+                'CRITICAL': 4,
+                'HIGH': 3,
+                'MEDIUM': 2,
+                'LOW': 1
+            }[item.priority];
+
+            // Add extra weight for non-purchased items
+            const purchaseWeight = item.purchased ? 1 : 2;
+            const totalWeight = weight * purchaseWeight;
+
+            for (let i = 0; i < totalWeight; i++) {
+                weightedItems.push(item);
+            }
+        });
+
+        return weightedItems[Math.floor(Math.random() * weightedItems.length)];
+    }
+
+    getPriorityRouletteItem(items) {
+        // First, randomly select a priority level
+        const priorities = ['CRITICAL', 'HIGH', 'MEDIUM', 'LOW'];
+        const availablePriorities = priorities.filter(priority =>
+            items.some(item => item.priority === priority)
+        );
+
+        if (availablePriorities.length === 0) {
+            return items[Math.floor(Math.random() * items.length)];
+        }
+
+        const selectedPriority = availablePriorities[Math.floor(Math.random() * availablePriorities.length)];
+        const priorityItems = items.filter(item => item.priority === selectedPriority);
+
+        return priorityItems[Math.floor(Math.random() * priorityItems.length)];
+    }
+
+    startRandomAnimation(type) {
+        const button = document.getElementById('random-select');
+        const buttonText = document.getElementById('random-button-text');
+
+        // Disable all random buttons
+        document.querySelectorAll('.random-button').forEach(btn => {
+            btn.disabled = true;
+        });
+
+        // Update button text with spinner
+        if (buttonText) {
+            buttonText.innerHTML = '<span class="spinning">🎲</span> PROCESSING...';
+        }
+
+        // Update status
+        const statusText = {
+            'weighted': 'ANALYZING PREFERENCES...',
+            'roulette': 'SPINNING ROULETTE...',
+            'basic': 'SELECTING RANDOM ITEM...'
+        }[type] || 'PROCESSING...';
+
+        this.updateRandomStatus(statusText, 'selecting');
+    }
+
+    resetRandomAnimation() {
+        // Re-enable all random buttons
+        document.querySelectorAll('.random-button').forEach(btn => {
+            btn.disabled = false;
+        });
+
+        // Reset button text
+        const buttonText = document.getElementById('random-button-text');
+        if (buttonText) {
+            buttonText.textContent = '🎲 RANDOM SELECT';
+        }
+
+        // Reset status
+        this.updateRandomStatus('READY', 'ready');
+    }
+
+    updateRandomStatus(text, state = 'ready') {
+        if (!this.randomStatus) return;
+
+        this.randomStatus.textContent = text;
+        this.randomStatus.className = state;
+
+        if (state === 'error') {
+            setTimeout(() => {
+                this.updateRandomStatus('READY', 'ready');
+            }, 3000);
+        }
+    }
+
+    displayRandomResult(item, resultType) {
+        if (!this.randomResult) return;
+
+        const priorityIcon = this.getPriorityIndicator(item.priority);
+        const statusIcon = item.purchased ? '✅' : '⏳';
+        const statusText = item.purchased ? 'ACQUIRED' : 'WANTED';
+
+        this.randomResult.innerHTML = `
+        <div class="random-result-header">
+            <div class="random-result-badge">${resultType}</div>
+        </div>
+        <div class="random-result-item" onclick="this.querySelector('.random-result-action').click()">
+            <div class="random-result-icon">${priorityIcon}</div>
+            <div class="random-result-content">
+                <div class="random-result-name">${this.escapeHtml(item.name)}</div>
+                <div class="random-result-meta">
+                    <span class="random-result-priority priority-${item.priority.toLowerCase()}">${item.priority}</span>
+                    <span>${item.category}</span>
+                    <span>${statusIcon} ${statusText}</span>
+                </div>
+            </div>
+            <button class="random-result-action" data-item-id="${item.id}">
+                VIEW ITEM
+            </button>
+        </div>
+    `;
+
+        // Add direct click handler as backup
+        const actionButton = this.randomResult.querySelector('.random-result-action');
+        if (actionButton) {
+            actionButton.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                this.jumpToRandomItem(item.id);
+            });
+        }
+
+        this.randomResult.style.display = 'block';
+        setTimeout(() => {
+            this.randomResult.classList.add('show');
+        }, 100);
+
+        this.updateRandomStatus('SELECTION COMPLETE', 'complete');
+    }
+
+    jumpToRandomItem(itemId) {
+        // Clear all filters and search to ensure item is visible
+        this.clearAllFilters();
+
+        // Scroll to and highlight the selected item
+        setTimeout(() => {
+            let itemElement = null;
+
+            // Try to find by data-item-id on wishlist items
+            const wishlistItems = document.querySelectorAll('.wishlist-item');
+            wishlistItems.forEach(item => {
+                const dataId = item.getAttribute('data-item-id');
+                if (dataId == itemId) {
+                    itemElement = item;
+                }
+            });
+
+            // Fallback: find by parsing the ID from the item header
+            if (!itemElement) {
+                wishlistItems.forEach(item => {
+                    const itemIdElement = item.querySelector('.item-id');
+                    if (itemIdElement) {
+                        const idText = itemIdElement.textContent;
+                        const extractedId = parseInt(idText.replace('ID: ', '').replace(/^0+/, '') || '0');
+                        if (extractedId === parseInt(itemId)) {
+                            itemElement = item;
+                        }
+                    }
+                });
+            }
+
+            if (itemElement) {
+                itemElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+                // Add temporary highlight effect
+                itemElement.style.boxShadow = '0 0 30px var(--terminal-blue)';
+                itemElement.style.transform = 'scale(1.02)';
+                itemElement.style.transition = 'all 0.3s ease';
+                itemElement.style.backgroundColor = 'rgba(59, 130, 246, 0.2)';
+
+                setTimeout(() => {
+                    itemElement.style.boxShadow = '';
+                    itemElement.style.transform = '';
+                    itemElement.style.backgroundColor = '';
+                }, 2500);
+            }
+        }, 500);
+    }
+
     setupKeyboardShortcuts() {
         document.addEventListener('keydown', (e) => {
             // Only handle shortcuts if data is loaded and not typing in input
@@ -710,6 +1046,12 @@ class TerminalWishlist {
                         break;
                     case 'h':
                         this.showKeyboardHelp();
+                        break;
+                    case 'r':
+                        if (!this.isRandomizing) {
+                            e.preventDefault();
+                            this.performRandomSelection('basic');
+                        }
                         break;
                 }
             }
@@ -800,6 +1142,13 @@ class TerminalWishlist {
                     <div class="shortcut-item">
                         <kbd>Ctrl</kbd> + <kbd>R</kbd>
                         <span>Reset all filters</span>
+                    </div>
+                </div>
+                <div class="shortcut-group">
+                    <div class="group-title">Random Selection</div>
+                    <div class="shortcut-item">
+                        <kbd>R</kbd>
+                        <span>Random item selection</span>
                     </div>
                 </div>
                 <div class="shortcut-group">

@@ -52,6 +52,41 @@
         </div>
     </div>
 
+    <div class="random-panel">
+        <div class="random-header">
+            <span class="random-title">🎲 Decision Engine</span>
+            <div class="random-status">
+                <span id="random-status">READY</span>
+            </div>
+        </div>
+        <div class="random-container">
+            <div class="random-controls">
+                <button class="random-button" id="random-select">
+                    <span id="random-button-text">🎲 RANDOM SELECT</span>
+                </button>
+                <button class="random-button" id="surprise-me">
+                    ✨ SURPRISE ME
+                </button>
+                <button class="random-button" id="priority-roulette">
+                    🎰 PRIORITY ROULETTE
+                </button>
+            </div>
+            <div class="random-modes">
+                <button class="mode-option active" data-mode="all">All Items</button>
+                <button class="mode-option" data-mode="wanted">Wanted Only</button>
+                <button class="mode-option" data-mode="priority">High Priority</button>
+            </div>
+            <div class="random-help">
+                <span class="help-text">Decision paralysis? Let the terminal decide for you.</span>
+                <span class="keyboard-hint">Press <kbd>R</kbd> for random selection</span>
+            </div>
+        </div>
+
+        <div id="random-result" class="random-result" style="display: none;">
+            <!-- Random selection result will be displayed here -->
+        </div>
+    </div>
+
     <div class="filter-panel">
         <div class="filter-header">
             <span class="filter-title">🔍 Filter Database</span>
