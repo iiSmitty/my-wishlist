@@ -1,56 +1,29 @@
 [
   {
     "id": 1,
-    "name": "Tactical Mechanical Keyboard",
-    "description": "Military-grade mechanical keyboard with Cherry MX switches. Rated for 50 million keystrokes. Essential for extended terminal operations and code compilation.",
-    "priority": "CRITICAL",
-    "category": "HARDWARE",
-    "link": "https://www.example-store.com/keyboard",
+    "name": "Alienware AW3423DWF",
+    "description": "{OLED}, {Ultra Wide}, {165Hz}, {3440x1440} - More of a personal upgrade, but this monitor would be a game-changer for both work and watching high production value YouTube content.",
+    "priority": "LOW",
+    "category": "TECH",
+    "link": "https://www.wootware.co.za/alienware-aw3423dwf-34-uwqhd-3440x1440-165hz-0-1ms-qd-oled-hdr400-freesync-premium-pro-curved-gaming-desktop-monitor.html",
     "purchased": false
   },
   {
     "id": 2,
-    "name": "Audio Isolation Headset",
-    "description": "Active noise cancellation technology blocks external interference. Perfect for maintaining focus during critical system operations and encrypted communications.",
-    "priority": "HIGH",
-    "category": "AUDIO",
-    "link": "https://www.example-store.com/headphones",
-    "purchased": true
+    "name": "Versus Socks",
+    "description": "The only socks I swear by. {Long Length Only} - no ankle or quarter lengths, please! Size: 8-12. Once you go Versus, everything else feels wrong.",
+    "priority": "LOW",
+    "category": "LIFESTYLE",
+    "link": "https://versussocks.com/",
+    "purchased": false
   },
   {
     "id": 3,
-    "name": "Strategic Operations Manual",
-    "description": "Sun Tzu's ancient text on tactical warfare and strategic thinking. Required reading for understanding competitive dynamics and resource allocation.",
+    "name": "Wilson Padel Balls X3",
+    "description": "{Replacement Schedule}: Every 3-4 games for optimal play. Always good to stock up since these disappear faster than my serve accuracy!",
     "priority": "MEDIUM",
-    "category": "EDUCATION",
-    "link": "https://www.example-store.com/sun-tzu",
-    "purchased": false
-  },
-  {
-    "id": 4,
-    "name": "Ergonomic Command Station",
-    "description": "Professional-grade operator chair with lumbar support systems. Designed for 12+ hour operational shifts with adjustable positioning controls.",
-    "priority": "HIGH",
-    "category": "FURNITURE",
-    "link": "https://www.example-store.com/office-chair",
-    "purchased": false
-  },
-  {
-    "id": 5,
-    "name": "Workstation Organization Module",
-    "description": "Precision-engineered desk organizer crafted from sustainable materials. Optimizes workspace efficiency with dedicated equipment compartments.",
-    "priority": "LOW",
-    "category": "ORGANIZATION",
-    "link": "https://www.example-store.com/desk-organizer",
-    "purchased": false
-  },
-  {
-    "id": 6,
-    "name": "Quantum Coffee Processing Unit",
-    "description": "High-precision espresso machine with temperature stability controls. Critical for maintaining operator alertness during extended debugging sessions.",
-    "priority": "CRITICAL",
-    "category": "LIFESTYLE",
-    "link": "https://www.example-store.com/espresso-machine",
+    "category": "SPORT",
+    "link": "https://www.sportsmanswarehouse.co.za/product/wilson-padel-balls-x3/",
     "purchased": false
   }
 ]
